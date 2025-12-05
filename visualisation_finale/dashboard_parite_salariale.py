@@ -314,7 +314,7 @@ def construire_dashboard(df_source: pd.DataFrame, emails_invalides: pd.DataFrame
     ax = axes[1, 0]
     categories = df_visu["categorie_pro"].dropna().unique()
     data_box = [df_visu[df_visu["categorie_pro"] == cat]["salaire_brut"].dropna() for cat in categories]
-    ax.boxplot(data_box, labels=categories, showfliers=False)
+    ax.boxplot(data_box, tick_labels=categories, showfliers=False)
     ax.set_title("Salaires par catégorie socio-professionnelle")
     ax.set_xlabel("Catégorie professionnelle")
     ax.set_ylabel("Salaire brut annuel (€)")
@@ -325,7 +325,7 @@ def construire_dashboard(df_source: pd.DataFrame, emails_invalides: pd.DataFrame
     # --------------------------------------------------------
     ax = axes[1, 1]
     moyennes_par_tranche = (
-        df_visu.groupby("tranche_age")["salaire_brut"]
+        df_visu.groupby("tranche_age", observed=False)["salaire_brut"]
         .mean()
         .reindex(["18-30", "30-40", "40-50", "50-60", "60-70"])
     )
