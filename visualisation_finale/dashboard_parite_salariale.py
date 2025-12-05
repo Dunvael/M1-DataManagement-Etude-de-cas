@@ -227,3 +227,129 @@ colonnes_gold = [
 ]
 
 df_gold = df[colonnes_gold].copy()
+
+# =========
+# Partie 4
+# =========
+
+import matplotlib.pyplot as plt
+from datetime import date
+
+# ==============================
+# 4. Visualisation Finale
+# Dashboard Matplotlib
+# ==============================
+
+# ===========================================================
+# 4.1 Enrichissement : calcul de l'âge et des tranches d'âge
+# ===========================================================
+def ajouter_age(df_source: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ajoute deux colonnes :
+      - age : âge en années (approximateur sur l'année)
+      - tranche_age : classe d'âge (18-30, 30-40, ...)
+    """
+    df_age = df_source.copy()
+    df_age["date_naissance_dt"] = pd.to_datetime(df_age["date_naissance"])
+    df_age["age"] = df_age["date_naissance_dt"].apply(
+        lambda d: date.today().year - d.year
+    )
+    df_age["tranche_age"] = pd.cut(
+        df_age["age"],
+        bins=[18, 30, 40, 50, 60, 70],
+        labels=["18-30", "30-40", "40-50", "50-60", "60-70"]
+    )
+    return df_age
+
+# On enrichit df (et donc df_gold si besoin) avec l'âge
+df = ajouter_age(df)
+
+# =========================================
+# 4.2 Construction du dashboard Matplotlib
+# =========================================
+def construire_dashboard(df_source: pd.DataFrame, emails_invalides: pd.DataFrame):
+    """
+    Construit un dashboard Matplotlib avec :
+      - Distribution globale des salaires
+      - Distribution par sexe
+      - Boxplot par catégorie socio-professionnelle
+      - Salaire moyen par tranche d'âge
+      + KPIs affichés sur la figure
+    """
+    df_visu = df_source.copy()
+
+    # KPIs
+    salaire_moyen = df_visu["salaire_brut"].mean()
+    nb_emails_invalides = len(emails_invalides)
+
+    # Figure globale avec 2 lignes x 2 colonnes
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle("Dashboard Parité Salariale - People Analytics", fontsize=16, fontweight="bold")
+
+    # --------------------------------------------------------
+    # Graphique 1 : Histogramme global des salaires
+    # --------------------------------------------------------
+    ax = axes[0, 0]
+    ax.hist(df_visu["salaire_brut"].dropna(), bins=30)
+    ax.set_title("Distribution globale des salaires")
+    ax.set_xlabel("Salaire brut annuel (€)")
+    ax.set_ylabel("Nombre d'employés")
+
+    # --------------------------------------------------------
+    # Graphique 2 : Histogramme des salaires par sexe
+    # --------------------------------------------------------
+    ax = axes[0, 1]
+    sexes = df_visu["sexe"].dropna().unique()
+    for sexe in sexes:
+        subset = df_visu[df_visu["sexe"] == sexe]["salaire_brut"].dropna()
+        ax.hist(subset, bins=30, alpha=0.5, label=str(sexe))
+    ax.set_title("Distribution des salaires par sexe")
+    ax.set_xlabel("Salaire brut annuel (€)")
+    ax.set_ylabel("Nombre d'employés")
+    ax.legend(title="Sexe")
+
+    # --------------------------------------------------------
+    # Graphique 3 : Boxplot des salaires par catégorie_pro (CSP)
+    # --------------------------------------------------------
+    ax = axes[1, 0]
+    categories = df_visu["categorie_pro"].dropna().unique()
+    data_box = [df_visu[df_visu["categorie_pro"] == cat]["salaire_brut"].dropna() for cat in categories]
+    ax.boxplot(data_box, labels=categories, showfliers=False)
+    ax.set_title("Salaires par catégorie socio-professionnelle")
+    ax.set_xlabel("Catégorie professionnelle")
+    ax.set_ylabel("Salaire brut annuel (€)")
+    ax.tick_params(axis='x', rotation=20)
+
+    # --------------------------------------------------------
+    # Graphique 4 : Salaire moyen par tranche d'âge
+    # --------------------------------------------------------
+    ax = axes[1, 1]
+    moyennes_par_tranche = (
+        df_visu.groupby("tranche_age")["salaire_brut"]
+        .mean()
+        .reindex(["18-30", "30-40", "40-50", "50-60", "60-70"])
+    )
+    ax.bar(moyennes_par_tranche.index.astype(str), moyennes_par_tranche.values)
+    ax.set_title("Salaire moyen par tranche d'âge")
+    ax.set_xlabel("Tranche d'âge")
+    ax.set_ylabel("Salaire brut moyen (€)")
+
+    # --------------------------------------------------------
+    # Affichage des KPI sur la figure
+    # --------------------------------------------------------
+    fig.text(
+        0.01, 0.02,
+        f"Salaire moyen global : {salaire_moyen:,.2f} €\n"
+        f"Nombre d'emails invalides corrigés/rejetés : {nb_emails_invalides}",
+        fontsize=10,
+        va="bottom",
+        ha="left"
+    )
+
+    fig.tight_layout(rect=[0, 0.05, 1, 0.95])
+    plt.show()
+
+# =======================
+# 4.3 Appel du dashboard
+# =======================
+construire_dashboard(df, emails_invalides)
