@@ -129,7 +129,7 @@ def make_hash_id(row):
 df["hash_id"] = df.apply(make_hash_id, axis=1)
 
 # ========================================================================
-# 5.2 Masquage du numéro de sécurité sociale (2 derniers chiffres gardés)
+# 2.2 Masquage du numéro de sécurité sociale (2 derniers chiffres gardés)
 # ========================================================================
 def mask_secu(value):
     """
@@ -150,7 +150,7 @@ def mask_secu(value):
 df["secu_sociale_masked"] = df["secu_sociale"].apply(mask_secu)
 
 # ============================================================
-# 5.3 Fonction de filtrage par rôle (Admin / Manager / Autre)
+# 2.3 Fonction de filtrage par rôle (Admin / Manager / Autre)
 # ============================================================
 def get_dataset_by_role(df_source: pd.DataFrame, role: str) -> pd.DataFrame:
     """
