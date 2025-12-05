@@ -3,14 +3,22 @@ import numpy as np
 from datetime import datetime
 import re
 
+# ==========================================================
+# Sujet 1 : RH & "People Analytics" (Focus Sécurité & RGPD)
+# ==========================================================
+
+# =========
+# Partie 1
+# =========
+
 # ===================================================
-# 1. Ingestion du fichier
+# 1.1 Ingestion du fichier
 # Lecture simple avec pandas.read_csv()
 # ===================================================
 df = pd.read_csv("./ingestion_et_nettoyage/employees_raw.csv")
 
 # ===================================================
-# 2. Nettoyage des emails
+# 1.2 Nettoyage des emails
 # Identification et suppression des emails invalides
 # ===================================================
 
@@ -26,7 +34,7 @@ df = df[df["email_valide"]].drop(columns=["email_valide"])
 
 
 # ==================================================================================
-# 3. Nettoyage salaire brut
+# 1.3 Nettoyage salaire brut
 # Suppression lettres/symboles/espaces
 # Extraction chiffres purs
 # Conversion en int
@@ -43,7 +51,7 @@ def nettoyer_salaire(v):
 df["salaire_brut"] = df["salaire_brut"].apply(nettoyer_salaire)
 
 # =================================================================
-# 4. Harmonisation date embauche
+# 1.4 Harmonisation date embauche
 # Conversion en datetime avec gestion des erreurs
 # Suppression dates incohérentes avant 1970/Après la date actuelle
 # =================================================================
@@ -83,7 +91,7 @@ df = df[
 df["date_embauche"] = df["date_embauche"].dt.strftime("%Y-%m-%d")
 
 # ==========================
-# Résultats finaux
+# Partie 1. Résultats finaux
 # ==========================
 
 print("Emails invalides détectés :", len(emails_invalides))
