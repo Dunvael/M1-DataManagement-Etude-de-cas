@@ -1,0 +1,54 @@
+dataset: employees_gold
+domain: RH
+description: >
+  Dataset Gold des employés pour les analyses People Analytics et
+  le suivi de la parité salariale. Données pseudonymisées, sans nom ni prénom.
+
+columns:
+  hash_id:
+    description: Identifiant unique anonymisé dérivé de nom+prenom+secu_sociale.
+    type: string
+    sensitivity: PII_pseudonymisee
+    owner: DRH
+
+  sexe:
+    description: Sexe de l'employé (M/F/autre).
+    type: string
+    sensitivity: PII
+    owner: DRH
+
+  date_naissance:
+    description: Date de naissance de l'employé.
+    type: date
+    sensitivity: PII_sensible
+    owner: DRH
+
+  categorie_pro:
+    description: Catégorie socio-professionnelle (Ouvrier, Cadre, etc.).
+    type: string
+    sensitivity: Confidentiel_interne
+    owner: DRH
+
+  salaire_brut:
+    description: Salaire brut annuel en euros, nettoyé et typé en integer.
+    type: integer
+    sensitivity: Confidentiel
+    owner: DRH
+
+  date_embauche:
+    description: Date d'embauche au format ISO (YYYY-MM-DD).
+    type: date
+    sensitivity: Confidentiel
+    owner: DRH
+
+  email:
+    description: Adresse email professionnelle de l'employé.
+    type: string
+    sensitivity: PII
+    owner: DSI
+
+  secu_sociale_masked:
+    description: Numéro de sécurité sociale masqué (2 derniers chiffres visibles).
+    type: string
+    sensitivity: PII_tres_sensible
+    owner: DPO
