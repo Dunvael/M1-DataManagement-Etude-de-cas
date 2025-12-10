@@ -152,7 +152,7 @@ def get_dataset_by_role(df_source: pd.DataFrame, role: str) -> pd.DataFrame:
     """
     Retourne une vue du dataset filtrée selon le rôle :
       - Admin   : voit toutes les colonnes (incluant secu_sociale)
-      - Manager : ne voit PAS les colonnes secu_sociale*, ni nom/prenom,
+      - Manager : ne voit PAS les colonnes secu_sociale*, email, ni nom/prenom,
                   et les salaires sont arrondis au millier près.
       - Autre   : vue très restreinte (Hash_ID + sexe + catégorie_pro + salaire arrondi)
     """
@@ -173,6 +173,7 @@ def get_dataset_by_role(df_source: pd.DataFrame, role: str) -> pd.DataFrame:
             "secu_sociale_masked",
             "nom",
             "prenom",
+            "email",
         ]
         cols_mgr = [c for c in df_mgr.columns if c not in colonnes_a_exclure]
         return df_mgr[cols_mgr]
